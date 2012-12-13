@@ -136,10 +136,15 @@ sub _build_headers_in {
 sub _build_filename {
     my $self = shift;
 
+    # did something set us a filename?
+    my $file = $self->env->{'plack.app.fakeapache.request.filename'};
+    return $file if defined $file;
+
+    # work out what the file should be ourselves
     my $paf = Plack::App::File->new(
         root => $self->root
     );
-    my ($file, $path) = $paf->locate_file( $self->env );
+    ($file) = $paf->locate_file( $self->env );
 
     return undef if ref $file;  # some sort of error
     return $file;
