@@ -165,7 +165,10 @@ sub finalize {
 
 sub args {
     my $self = shift;
-    return $self->plack_request->query_parameters
+    if (@_) {
+        $self->plack_request->env->{QUERY_STRING} = shift;
+    }
+    return $self->plack_request->env->{QUERY_STRING};
 }
 
 sub log_reason { 1 } # TODO
