@@ -175,7 +175,7 @@ sub log_reason { 1 } # TODO
 sub hostname {
     my $self = shift;
 
-    return $self->env->{SERVER_NAME};
+    return $self->env->{HTTP_HOST};
 }
 
 sub subprocess_env {
