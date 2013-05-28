@@ -105,12 +105,19 @@ has root => (
     default    => cwd(),
 );
 
+has _notes => (
+    is  => 'rw',
+    isa => 'APR::Table',
+    lazy_build => 1,
+);
+
 # builders
 sub _build_plack_request  { return Plack::Request->new( shift->env ) }
 sub _build_plack_response { return Plack::Response->new( 200, {}, [] ) }
 sub _build__apr_pool      { return APR::Pool->new() }
 sub _build_headers_out    { return APR::Table::make( shift->_apr_pool, 64 ) }
 sub _build_err_headers_out{ return APR::Table::make( shift->_apr_pool, 64 ) }
+sub _build__notes         { return APR::Table::make( shift->_apr_pool, 64 ) }
 
 sub _build__subprocess_env { 
     my $self  = shift;
@@ -216,14 +223,8 @@ sub pnotes {
 
 sub notes {
     my $self = shift;
-    my $key  = shift;
-    my $old = $self->env->{$NS.'.notes'}->{$key};
-
-    if (@_) {
-        $self->env->{$NS.'.notes'}->{$key} = "".shift;
-    }
-
-    return $old;
+    $self->_notes(shift) if @_;
+    return $self->_notes;
 }
 
 # this is strictly mocking Apache::Connection, and only partially
